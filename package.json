@@ -11,10 +11,11 @@
   "license": "MIT",
   "dependencies": {
     "apollo-server-fastify": "^2.19.0",
-    "fastify": "^2.12.1",
-    "graphql": "^14.6.0",
-    "graphql-compose": "^7.14.0",
-    "graphql-compose-mongoose": "^7.3.4",
-    "mongoose": "^5.9.5"
+    "fastify": "^2.15.3",
+    "graphql": "^14.7.0",
+    "graphql-compose": "^7.23.0",
+    "graphql-compose-mongoose": "^7.5.0",
+    "graphql-mongoose-schemabuilder": "^1.0.2",
+    "mongoose": "^5.10.17"
   }
 }

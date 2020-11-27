@@ -2,7 +2,9 @@
 const { ApolloServer, gql } = require('apollo-server-fastify');
 const fastify = require('fastify')({ logger: true });
 const { isConnected } = require('./db');
-const graphqlSchema = require('./graphql');
+const { buildSchemaFromModels } = require('graphql-mongoose-schemabuilder');
+const { models } = require('./models');
+
 
 // Declare a route
 fastify.get('/', async (request, reply) => {
@@ -14,7 +16,7 @@ const start = async () => {
   try {
     // create graphql server
     const gqlServer = new ApolloServer({
-      schema: graphqlSchema
+      schema: buildSchemaFromModels(models)
     });
 
     await isConnected;
