@@ -47,18 +47,6 @@ const buildMutations = (name, TC) => {
   return Mutation;
 };
 
-/*const searchFilter = {
-  name: 'search',
-  type: 'String',
-  query: (query, value, resolveParams) => {
-    resolveParams.args.sort = {
-      score: { $meta: 'textScore' },
-    };
-    query.$text = { $search: value, $language: 'en' };
-    resolveParams.projection.score = { $meta: 'textScore' };
-  },
-}; */
-
 Object.keys(models).forEach((key, i) => {
   let name = key;
   let model = models[name];
