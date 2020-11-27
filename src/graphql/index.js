@@ -47,10 +47,56 @@ const buildMutations = (name, TC) => {
   return Mutation;
 };
 
+/*const searchFilter = {
+  name: 'search',
+  type: 'String',
+  query: (query, value, resolveParams) => {
+    resolveParams.args.sort = {
+      score: { $meta: 'textScore' },
+    };
+    query.$text = { $search: value, $language: 'en' };
+    resolveParams.projection.score = { $meta: 'textScore' };
+  },
+}; */
+
 Object.keys(models).forEach((key, i) => {
   let name = key;
   let model = models[name];
+  let fields = {};
+  
+  Object.keys(model.schema.obj).forEach(key => {
+    let value = model.schema.paths[key];
+    if(value.instance == 'String')
+      fields[key] = {
+        type: '[String]',
+        name: key,
+        description: 'field to apply regular expression'
+      };
+  });
+  
+  schemaComposer.createInputTC({
+    name: `${name}Search`,
+    description: 'String or Regular Expression',
+    fields: fields
+  });
+  
+  const searchFilter = {
+    name: 'Search',
+    type: `${name}Search`, 
+    description: 'Search by String or Regular Expression',
+    query: (rawQuery, value, resolveParams) => {
+      Object.keys(value).forEach((key) => {
+        rawQuery[key] = new RegExp(value[key], 'i');
+      });
+    },
+  }; 
+  
   Fields.TC[name] = composeWithMongoose(model, customizationOptions);
+  let paginationResolver = Fields.TC[name].getResolver('pagination').addFilterArg(searchFilter);
+  let findManyResolver = Fields.TC[name].getResolver('findMany').addFilterArg(searchFilter);
+  Fields.TC[name].setResolver('pagination', paginationResolver);
+  Fields.TC[name].setResolver('findMany', findManyResolver);
+  
   Fields.Queries = {
     ...Fields.Queries,
     ...buildQueries(name, Fields.TC[name])
@@ -65,7 +111,7 @@ schemaComposer.Query.addFields({
   ...Fields.Queries,
 });
 
-schemaComposer.Mutations.addFields({
+schemaComposer.Mutation.addFields({
   ...Fields.Mutations
 });
 
